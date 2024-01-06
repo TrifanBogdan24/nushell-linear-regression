@@ -1,7 +1,7 @@
 
 
 pub struct MatrixMN {
-    values: Vec<Vec<f64>>,
+    pub values: Vec<Vec<f64>>,
 }
 
 impl MatrixMN {

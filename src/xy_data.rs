@@ -1,10 +1,10 @@
 use crate::matrix::MatrixMN;
 
 pub struct DataSet {
-    x_name: String,
-    y_name: String,
-    x_values: Vec<f64>,
-    y_values: Vec<f64>,
+    pub x_name: String,
+    pub y_name: String,
+    pub x_values: Vec<f64>,
+    pub y_values: Vec<f64>,
 }
 
 

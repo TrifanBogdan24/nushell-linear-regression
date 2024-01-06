@@ -1,6 +1,5 @@
 use crate::matrix::MatrixMN;
 
-
 impl MatrixMN {
     /// the number of columns will be returned
     pub fn length(&self) -> usize {
@@ -36,7 +35,7 @@ impl MatrixMN {
     pub fn resize(&self, m: usize, n: usize) -> Self {
         let vector: Vec<f64> = self.get_vector();
 
-        validate_new_matrix_creation(m, n);
+        Self::validate_new_matrix_creation(m, n);
 
         if vector.is_empty() {
             panic!("Cannot a matrix with no elements!");

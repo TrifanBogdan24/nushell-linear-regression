@@ -3,7 +3,7 @@ use crate::matrix::MatrixMN;
 
 impl MatrixMN {
     pub fn zeros(m: usize, n: usize) -> Self {
-        validate_new_matrix_creation(m, n);
+        Self::validate_new_matrix_creation(m, n);
 
         let mut vector: Vec<f64> = Vec::new();
 

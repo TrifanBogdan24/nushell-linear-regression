@@ -2,7 +2,7 @@ use crate::matrix::MatrixMN;
 
 
 impl MatrixMN {
-    pub fn is_invertible(&self) {
+    pub fn is_invertible(&self) -> bool {
         let m: usize = self.nr_lines();
         let n: usize = self.nr_columns();
 
@@ -14,7 +14,7 @@ impl MatrixMN {
             return false;
         }
 
-        if det.abs() < f64::EPSILON {
+        if self.det().abs() < f64::EPSILON {
             return false;
         }
 

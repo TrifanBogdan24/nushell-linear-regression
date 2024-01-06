@@ -1,5 +1,5 @@
 
-pub mod matrix-operations {
+pub mod matrix_operations {
     pub mod create;
     pub mod determinant;
     pub mod empty;
@@ -24,6 +24,7 @@ pub fn add(left: usize, right: usize) -> usize {
 mod tests {
     use super::*;
     use crate::matrix::MatrixMN;
+
 
     #[test]
     fn it_works() {

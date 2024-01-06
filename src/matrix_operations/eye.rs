@@ -3,7 +3,7 @@ use crate::matrix::MatrixMN;
 
 impl MatrixMN {
     pub fn unsquare_eye(m: usize, n: usize) -> Self {
-        validate_new_matrix_creation(m, n);
+        Self::validate_new_matrix_creation(m, n);
 
         let mut mat: Self = Self::zeros(m, n);
 

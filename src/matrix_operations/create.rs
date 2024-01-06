@@ -4,16 +4,18 @@ use crate::matrix::MatrixMN;
 
 /// m = the number of lines (rows) = the height of the matrix
 /// n = the number of columns      = the lengths of the matrix
-pub fn validate_new_matrix_creation(m: usize, n: usize) {
-    if m == 0 && n == 0 {
-        eprintln!("Err: the new matrix must contain at least one line and one column");
-        panic!("Cannot create a matrix with 0 lines nad 0 columns!");
-    } else if m == 0 {
-        eprintln!("Err: the new matrix must contain at least one line.");
-        panic!("Cannot create a matrix with 0 lines!");
-    } else if n == 0 {
-        eprintln!("Err: the new matrix must contain at least one column.");
-        panic!("Cannot create a matrix with 0 columns!");
+impl MatrixMN {
+    pub fn validate_new_matrix_creation(m: usize, n: usize) {
+        if m == 0 && n == 0 {
+            eprintln!("Err: the new matrix must contain at least one line and one column");
+            panic!("Cannot create a matrix with 0 lines nad 0 columns!");
+        } else if m == 0 {
+            eprintln!("Err: the new matrix must contain at least one line.");
+            panic!("Cannot create a matrix with 0 lines!");
+        } else if n == 0 {
+            eprintln!("Err: the new matrix must contain at least one column.");
+            panic!("Cannot create a matrix with 0 columns!");
+        }
     }
 }
 
@@ -25,7 +27,7 @@ impl MatrixMN {
     /// m       : the number of lines
     /// n       : the number of columns
     pub fn create_matrix(vector: &Vec<f64>, m: usize, n: usize) -> Self {
-        validate_new_matrix_creation(m, n);
+        Self::validate_new_matrix_creation(m, n);
 
         if vector.is_empty() {
             panic!("Cannot a matrix with no elements!");
