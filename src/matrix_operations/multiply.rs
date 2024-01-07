@@ -30,20 +30,20 @@ impl MatrixMN {
 
         let m: usize = m1;      // nr lines first matrix == nr lines final matrix
         let p: usize = m2;      // nr cols first matrix = nr lines second matrix
-        let n: usize = n2;     // nr cols second matrix == nr cols final matrix
-        let mut ret_mat = Self::zeros(m, n);
+        let n: usize = n2;      // nr cols second matrix == nr cols final matrix
+        let mut ret_mat: MatrixMN = Self::zeros(m, n);
 
         for i in 0..=(m - 1) {
             for j in 0..=(n - 1) {
 
                 ret_mat.values[i][j] = 0.0f64;
                 for k in 0..=(p - 1) {
-                    ret_mat.values[i][j] += mat1.values[m][k] * mat2.values[k][n];
+                    ret_mat.values[i][j] += mat1.values[i][k] * mat2.values[k][j];
                 }
 
             }
         }
 
-        return ret_mat
+        return ret_mat;
     }
 }

@@ -7,7 +7,7 @@ impl MatrixMN {
 
         let mut vector: Vec<f64> = Vec::new();
 
-        for i in 0..=(m * n - 1) {
+        for _i in 0..=(m * n - 1) {
             vector.push(1.0f64);
         }
 
