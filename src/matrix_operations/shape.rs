@@ -64,7 +64,6 @@ impl MatrixMN {
         }
 
 
-
         let new_mat: Self = Self::create_matrix(&vector, m, n);
         self.values = new_mat.values;
     }
@@ -85,7 +84,7 @@ impl MatrixMN {
             panic!("Invalid resize");
         }
 
-        let new_mat: Self = Self::create_matrix(&vector, vector.len() % n, n);
+        let new_mat: Self = Self::create_matrix(&vector, vector.len() / n, n);
         self.values = new_mat.values;
     }
 }
@@ -93,6 +92,7 @@ impl MatrixMN {
 impl MatrixMN {
     /// height = number of rows (lines)
     pub fn set_height(&mut self, m: usize) {
+
         if m == 0 {
             panic!("Cannot set the number of lines with 0.");
         }
@@ -105,7 +105,7 @@ impl MatrixMN {
             panic!("Invalid resize");
         }
 
-        let new_mat: Self = Self::create_matrix(&vector, m, vector.len() % m);
+        let new_mat: Self = Self::create_matrix(&vector, m, vector.len() / m);
         self.values = new_mat.values;
     }
 }
