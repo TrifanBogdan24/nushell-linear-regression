@@ -1136,7 +1136,7 @@ mod tests {
     fn multiply_vector_matrices_1() {
         let mat1: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 2.0, 3.0], 1, 3);
         let mat2: MatrixMN = MatrixMN::create_matrix(&vec![3.0, 2.0, 1.0], 3, 1);
-        let mat3: MatrixMN = MatrixMN::mul(mat1, mat2);
+        let mat3: MatrixMN = MatrixMN::mul(&mat1, &mat2);
 
         if mat3.length() != 1 || mat3.nr_lines() != 1 {
             assert!(false);
@@ -1158,7 +1158,7 @@ mod tests {
     fn invalid_multiply_vector_matrices_1() {
         let mat1: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 2.0, 3.0], 1, 3);
         let mat2: MatrixMN = MatrixMN::create_matrix(&vec![3.0, 2.0, 1.0], 3, 1);
-        let _mat3: MatrixMN = MatrixMN::mul(mat2, mat1);     // should panic!
+        let _mat3: MatrixMN = MatrixMN::mul(&mat2, &mat1);     // should panic!
         assert!(false, "The function should panic! \
         The operation can be applied only to matrices for which \
         the number of columns of the first one equals \
@@ -1169,7 +1169,7 @@ mod tests {
     fn multiply_vector_matrices_2() {
         let mat1: MatrixMN = MatrixMN::create_matrix(&vec![3.0, 2.0, 1.0], 3, 1);
         let mat2: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 2.0, 3.0], 1, 3);
-        let mat3: MatrixMN = MatrixMN::mul(mat1, mat2);
+        let mat3: MatrixMN = MatrixMN::mul(&mat1, &mat2);
 
         if mat3.length() != 3 || mat3.nr_lines() != 3 {
             assert!(false);
@@ -1190,7 +1190,7 @@ mod tests {
     fn invalid_multiply_vector_matrices_2() {
         let mat1: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 2.0, 3.0], 3, 1);
         let mat2: MatrixMN = MatrixMN::create_matrix(&vec![3.0, 2.0, 1.0], 1, 3);
-        let _mat3: MatrixMN = MatrixMN::mul(mat2, mat1);
+        let _mat3: MatrixMN = MatrixMN::mul(&mat2, &mat1);
         assert!(false, "The function should panic! \
         The operation can be applied only to matrices for which \
         the number of columns of the first one equals \
@@ -1201,7 +1201,7 @@ mod tests {
     fn multiply_square_matrices_1() {
         let mat1: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 2.0, 3.0, 4.0], 2, 2);
         let mat2: MatrixMN = MatrixMN::create_matrix(&vec![4.0, 1.0, 3.0, 2.0], 2, 2);
-        let mat3: MatrixMN = MatrixMN::mul(mat1, mat2);
+        let mat3: MatrixMN = MatrixMN::mul(&mat1, &mat2);
 
         if mat3.length() != 2 || mat3.nr_lines() != 2 {
             assert!(false);
@@ -1222,7 +1222,7 @@ mod tests {
     fn multiply_square_matrices_2() {
         let mat1: MatrixMN = MatrixMN::create_matrix(&vec![4.0, 1.0, 3.0, 2.0], 2, 2);
         let mat2: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 2.0, 3.0, 4.0], 2, 2);
-        let mat3: MatrixMN = MatrixMN::mul(mat1, mat2);
+        let mat3: MatrixMN = MatrixMN::mul(&mat1, &mat2);
 
         if mat3.length() != 2 || mat3.nr_lines() != 2 {
             assert!(false);
@@ -1243,7 +1243,7 @@ mod tests {
     fn multiply_non_square_matrices_1() {
         let mat1: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0], 2, 3);
         let mat2: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 4.0, 2.0, 5.0, 3.0, 6.0], 3, 2);
-        let mat3: MatrixMN = MatrixMN::mul(mat1, mat2);
+        let mat3: MatrixMN = MatrixMN::mul(&mat1, &mat2);
 
         if mat3.values[0][0] != 14.0 || mat3.values[0][1] != 32.0
             || mat3.values[1][0] != 32.0 || mat3.values[1][1] != 77.0 {
@@ -1257,7 +1257,7 @@ mod tests {
     fn multiply_non_square_matrices_2() {
         let mat1: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], 2, 4);
         let mat2: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 5.0, 2.0, 6.0, 3.0, 7.0, 4.0, 8.0], 4, 2);
-        let mat3: MatrixMN = MatrixMN::mul(mat1, mat2);
+        let mat3: MatrixMN = MatrixMN::mul(&mat1, &mat2);
 
         if mat3.values[0][0] != 30.0 || mat3.values[0][1] != 70.0
             || mat3.values[1][0] != 70.0 || mat3.values[1][1] != 174.0 {
@@ -1271,7 +1271,7 @@ mod tests {
     fn multiply_non_square_matrices_3() {
         let mat1: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 5.0, 2.0, 6.0, 3.0, 7.0, 4.0, 8.0], 4, 2);
         let mat2: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], 2, 4);
-        let mat3: MatrixMN = MatrixMN::mul(mat1, mat2);
+        let mat3: MatrixMN = MatrixMN::mul(&mat1, &mat2);
 
         if mat3.values[0][0] != 26.0 || mat3.values[0][1] != 32.0
             || mat3.values[0][2] != 38.0 || mat3.values[0][3] != 44.0
@@ -1291,7 +1291,7 @@ mod tests {
     fn multiply_non_square_matrices_4() {
         let mat1: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 5.0], 1, 2);
         let mat2: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], 2, 4);
-        let mat3: MatrixMN = MatrixMN::mul(mat1, mat2);
+        let mat3: MatrixMN = MatrixMN::mul(&mat1, &mat2);
 
         if mat3.values[0][0] != 26.0 || mat3.values[0][1] != 32.0
             || mat3.values[0][2] != 38.0 || mat3.values[0][3] != 44.0 {
@@ -1305,7 +1305,7 @@ mod tests {
     fn multiply_non_square_matrices_5() {
         let mat1: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 5.0], 1, 2);
         let mat2: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 2.0, 3.0, 5.0, 6.0, 7.0], 2, 3);
-        let mat3: MatrixMN = MatrixMN::mul(mat1, mat2);
+        let mat3: MatrixMN = MatrixMN::mul(&mat1, &mat2);
 
         if mat3.values[0][0] != 26.0 || mat3.values[0][1] != 32.0 || mat3.values[0][2] != 38.0 {
             assert!(false);
@@ -1587,5 +1587,51 @@ mod tests {
 
         let mat: MatrixMN = MatrixMN::create_matrix(&vector, 4, 4);
         assert_eq!(mat.is_invertible(), false);
+    }
+
+
+    #[test]
+    fn multiply_two_matrices_1() {
+        assert!(true);
+    }
+
+    #[test]
+    fn test_all_matrix_functions() {
+        println!("\nCreating a matrix:");
+        let vals: Vec<f64> = vec![1.0, 1.0, 2.0, 4.0, 5.0, 7.0, 8.0, 9.0, 10.0];
+        let mut mat: MatrixMN = MatrixMN::create_matrix(&vals, 3, 3);
+        mat.disp();         // prints the matrix to stdout
+
+        println!("\nCreating an identical 4x4 matrix:");
+        mat = MatrixMN::eye(4);
+        mat.disp();
+
+        println!("\nCreating an identical matrix with 3 lines and 5 columns:");
+        mat = MatrixMN::unsquare_eye(3, 5);
+        mat.disp();
+
+        println!("\nCreating an identical matrix with 5 lines and 4 columns:");
+        mat = MatrixMN::unsquare_eye(5, 3);
+        mat.disp();
+
+
+        println!("\nTransposing a matrix:");
+        println!("Initial matrix:");
+        mat = MatrixMN::create_matrix(&vals, 3, 3);
+        println!("Transposed matrix:");
+        let matt: MatrixMN = mat.transpose();
+        matt.disp();
+
+        println!("\nMultiply two matrices");
+        let mat1: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], 2, 4);
+        let mat2: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 5.0, 2.0, 6.0, 3.0, 7.0, 4.0, 8.0], 4, 2);
+        let mat3: MatrixMN = MatrixMN::mul(&mat1, &mat2);
+        mat3.disp();
+
+        println!("\nThe inverse of a matrix");
+        let inv: MatrixMN = mat.inverse();
+        inv.disp();
+
+        assert!(true);
     }
 }

@@ -8,7 +8,7 @@ impl MatrixMN {
     /// the number of columns of the first matrix
     /// must equal
     /// the number of rows of the second matrix
-    pub fn mul(mat1: Self, mat2: Self) -> Self {
+    pub fn mul(mat1: &Self, mat2: &Self) -> Self {
         let m1: usize = mat1.nr_lines();
         let n1: usize = mat1.nr_columns();
 
