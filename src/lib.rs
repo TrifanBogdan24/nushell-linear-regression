@@ -26,6 +26,9 @@ mod tests {
     use std::arch::x86_64::_mm_aeskeygenassist_si128;
     use super::*;
     use crate::matrix::MatrixMN;
+    use crate::xy_data::*;
+    use approx::abs_diff_eq;        // since I compute integrals,
+    // I am interested in comparing only the first 5 decimals
 
 
     #[test]
@@ -1635,4 +1638,161 @@ mod tests {
 
         assert!(true);
     }
+
+    #[test]
+    fn create_data_set_1() {
+        let dt: DataSet = DataSet {
+            x_name: String::from("X"),
+            y_name: String::from("Y"),
+            x_values: vec![1.0, 2.0, 3.0, 4.0],
+            y_values: vec![11.0, 15.0, 26.0, 55.0],
+        };
+
+        dt.validate_data_set();
+        assert!(true);
+    }
+
+    #[test]
+    fn create_data_set_2() {
+        let nm1: String = String::from("X-var");
+        let nm2: String = String::from("Y-var");
+        let val1: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
+        let val2: Vec<f64> = vec![11.0, 15.0, 26.0, 55.0];
+
+        let dt: DataSet = DataSet::new(nm1.clone(), nm2.clone(), val1.clone(), val2.clone());
+
+        if dt.x_name != "X-var" || dt.y_name != "Y-var" {
+            assert!(false);
+        }
+
+        if dt.x_values.len() != dt.y_values.len()
+            || dt.x_values.len() != val1.len() || dt.y_values.len() != val2.len() {
+            assert!(false);
+        }
+
+        for i in 0..dt.x_values.len() {
+            if dt.x_values[i] != val1[i] || dt.y_values[i] != val2[i] {
+                assert!(false);
+            }
+        }
+
+        assert!(true);
+    }
+
+    #[test]
+    #[should_panic]
+    fn create_invalid_data_set_1() {
+        let dt: DataSet = DataSet {
+            x_name: String::from(""),
+            y_name: String::from("Y"),
+            x_values: vec![1.0, 2.0, 3.0, 4.0],
+            y_values: vec![11.0, 15.0, 26.0, 55.0],
+        };
+
+        dt.validate_data_set();
+        assert!(true);
+    }
+
+    #[test]
+    #[should_panic]
+    fn create_invalid_data_set_2() {
+        let dt: DataSet = DataSet {
+            x_name: String::from("X"),
+            y_name: String::new(),
+            x_values: vec![1.0, 2.0, 3.0, 4.0],
+            y_values: vec![11.0, 15.0, 26.0, 55.0],
+        };
+
+        dt.validate_data_set();
+        assert!(true);
+    }
+
+    #[test]
+    #[should_panic]
+    fn create_invalid_data_set_3() {
+        let dt: DataSet = DataSet {
+            x_name: String::from("X"),
+            y_name: String::from("Y"),
+            x_values: vec![],
+            y_values: vec![11.0, 15.0, 26.0, 55.0],
+        };
+
+        dt.validate_data_set();
+        assert!(true);
+    }
+
+    #[test]
+    #[should_panic]
+    fn create_invalid_data_set_4() {
+        let dt: DataSet = DataSet {
+            x_name: String::from("X"),
+            y_name: String::from("Y"),
+            x_values: vec![1.0, 2.0, 3.0, 4.0],
+            y_values: Vec::new(),
+        };
+
+        dt.validate_data_set();
+        assert!(true);
+    }
+
+    #[test]
+    #[should_panic]
+    fn create_invalid_data_set_5() {
+        let nm1: String = String::from("X-var");
+        let nm2: String = String::from("Y-var");
+        let val1: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0, 11.5];
+        let val2: Vec<f64> = vec![11.0, 15.0, 26.0, 55.0];
+
+        let dt: DataSet = DataSet::new(nm1.clone(), nm2.clone(), val1.clone(), val2.clone());
+
+        if dt.x_name != "X-var" || dt.y_name != "Y-var" {
+            assert!(false);
+        }
+
+        if dt.x_values.len() != dt.y_values.len()
+            || dt.x_values.len() != val1.len() || dt.y_values.len() != val2.len() {
+            assert!(false);
+        }
+
+        for i in 0..dt.x_values.len() {
+            if dt.x_values[i] != val1[i] || dt.y_values[i] != val2[i] {
+                assert!(false);
+            }
+        }
+
+        assert!(true);
+    }
+
+
+    #[test]
+    fn linear_regression_1() {
+        let nm1: String = String::from("X-var");
+        let nm2: String = String::from("Y-var");
+        let val1: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
+        let val2: Vec<f64> = vec![10.0, 20.0, 30.0, 40.0];
+
+        let dt: DataSet = DataSet::new(nm1.clone(), nm2.clone(), val1.clone(), val2.clone());
+
+        // the line will be the first bisector
+        match dt.compute_linear_regression() {
+            Ok(line) => {
+                println!("{}", dt.equation_linear_regression());
+                // Compare with a precision of the first 10 decimals
+
+                let precision = 1e-10;
+
+                if abs_diff_eq!(line.slope, 10.0, epsilon = precision) == false {
+                    assert!(false);
+                }
+
+                if abs_diff_eq!(line.intercept, 0.0, epsilon = precision) == false {
+                    assert!(false);
+                }
+
+            },
+            Err(_) => assert!(false),
+        }
+        assert!(true);
+    }
+
 }

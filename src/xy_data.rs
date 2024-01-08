@@ -1,5 +1,3 @@
-use std::panic::panic_any;
-use std::thread::sleep;
 use crate::matrix::MatrixMN;
 
 pub struct DataSet {
@@ -12,7 +10,7 @@ pub struct DataSet {
 
 /// d : x = a
 pub struct XBar {
-    x: f64,
+    pub x: f64,
 }
 
 
@@ -20,8 +18,8 @@ pub struct XBar {
 /// a = slope
 /// b = intercept
 pub struct Line {
-    slope: f64,
-    intercept: f64,
+    pub slope: f64,
+    pub intercept: f64,
 }
 
 
@@ -106,7 +104,9 @@ impl DataSet {
             b.values[i][0] = self.y_values[i];
         }
 
-        let stage1 = MatrixMN::mul(&a.transpose(), &b);
+        let stage1: MatrixMN = MatrixMN::mul(&a.transpose(), &a);
+
+       stage1.disp();
 
         if !stage1.is_invertible() {
             let ret = XBar {
@@ -115,9 +115,9 @@ impl DataSet {
             return Err(ret);
         }
 
-        let stage2 = stage1.inverse();
-        let stage3 = MatrixMN::mul(&stage2, &a.transpose());
-        let stage4 = MatrixMN::mul(&stage3, &b);
+        let stage2: MatrixMN = stage1.inverse();
+        let stage3: MatrixMN = MatrixMN::mul(&stage2, &a.transpose());
+        let stage4: MatrixMN = MatrixMN::mul(&stage3, &b);
 
         let ret = Line {
             slope: stage4.values[1][0],
@@ -126,4 +126,27 @@ impl DataSet {
 
         return Ok(ret);
     }
+}
+
+
+impl DataSet {
+    pub fn equation_linear_regression(&self) -> String {
+        match self.compute_linear_regression() {
+            Ok(line) => {
+                return format!("d : y = a * {:.10} + {:.10}", line.slope, line.intercept);
+            },
+            Err(bar) => {
+                return format!("d : x = {:.10}", bar.x);
+            }
+        }
+    }
+}
+
+
+impl DataSet {
+    pub fn disp(&self) {
+        println!("\"{}\": {:?}", self.x_name, self.x_values);
+        println!("\"{}\": {:?}", self.y_name, self.y_values);
+    }
+
 }
