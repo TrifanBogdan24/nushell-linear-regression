@@ -1,4 +1,5 @@
 use std::panic::panic_any;
+use std::thread::sleep;
 use crate::matrix::MatrixMN;
 
 pub struct DataSet {
@@ -24,31 +25,37 @@ pub struct Line {
 }
 
 
+impl DataSet {
+    pub fn validate_data_set(&self) {
+        if self.x_name.is_empty() {
+            panic!("Missing name of the input variable.");
+        }
+        if self.y_name.is_empty() {
+            panic!("Missing name of the output variable.");
+        }
+        if self.x_values.is_empty() {
+            panic!("The are no values for the X-axis.");
+        }
+        if self.y_values.is_empty() {
+            panic!("The are no values for the Y-axis.");
+        }
+        if self.x_values.len() != self.y_values.len() {
+            panic!("Different number of elements for the input and output values.");
+        }
+    }
+}
 
 impl DataSet {
     pub fn new(name1: String, name2: String, val1: Vec<f64>, val2: Vec<f64>) -> Self {
-        if name1.is_empty() {
-            panic!("Empty input name.");
-        }
-        if name2.is_empty() {
-            panic!("Empty output name.");
-        }
-        if val1.is_empty() {
-            panic!("The are no input values.");
-        }
-        if val2.is_empty() {
-            panic!("The are no output values.");
-        }
-        if val1.len() != val2.len() {
-            panic!("Different number of elements for the input and output values.");
-        }
-
-        return DataSet {
+        let ret: DataSet =  DataSet {
             x_name: name1,
             y_name: name2,
             x_values: val1,
             y_values: val2,
         };
+
+        ret.validate_data_set();
+        return ret;
     }
 }
 
@@ -68,22 +75,27 @@ pub fn avg(vector: &Vec<f64>) -> f64 {
 
 
 impl DataSet {
+    pub fn print_horizontally(&self) {
+        self.validate_data_set();
+        println!("{}: {:?}", self.x_name, self.x_values);
+        println!("{}: {:?}", self.y_name, self.y_values);
+    }
+
+    pub fn print_vertically(&self) {
+        self.validate_data_set();
+        println!("X = {}, Y = {}", self.x_name, self.y_name);
+        for i in 0..self.x_values.len() {
+            println!("{}, {}", self.x_values[i], self.y_values[i]);
+        }
+    }
+}
+
+impl DataSet {
     /// Result<Ok, Err>
     /// Err -> the equation of a vertical line
-    /// Ok -> the equation of a line
+    /// Ok -> the equation of a (oblique / horizontal) line
     pub fn compute_linear_regression(&self) -> Result<Line, XBar> {
-
-        if self.x_name.is_empty() || self.y_values.is_empty() {
-            panic!("Missing column names");
-        }
-
-        if self.x_values.is_empty() || self.y_values.is_empty() {
-            panic!("Empty data values");
-        }
-
-        if self.x_values.len() != self.y_values.len() {
-            panic!("The columns do not have the same size");
-        }
+        self.validate_data_set();
 
         let len: usize = self.x_values.len();
         let mut a: MatrixMN = MatrixMN::ones(len, 2);

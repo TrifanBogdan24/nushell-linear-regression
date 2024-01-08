@@ -13,6 +13,7 @@ pub mod matrix_operations {
 }
 
 pub mod matrix;
+mod xy_data;
 
 pub fn add(left: usize, right: usize) -> usize {
     left + right
