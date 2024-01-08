@@ -1,3 +1,4 @@
+use std::panic::panic_any;
 use crate::matrix::MatrixMN;
 
 pub struct DataSet {
@@ -26,6 +27,22 @@ pub struct Line {
 
 impl DataSet {
     pub fn new(name1: String, name2: String, val1: Vec<f64>, val2: Vec<f64>) -> Self {
+        if name1.is_empty() {
+            panic!("Empty input name.");
+        }
+        if name2.is_empty() {
+            panic!("Empty output name.");
+        }
+        if val1.is_empty() {
+            panic!("The are no input values.");
+        }
+        if val2.is_empty() {
+            panic!("The are no output values.");
+        }
+        if val1.len() != val2.len() {
+            panic!("Different number of elements for the input and output values.");
+        }
+
         return DataSet {
             x_name: name1,
             y_name: name2,
@@ -54,7 +71,7 @@ impl DataSet {
     /// Result<Ok, Err>
     /// Err -> the equation of a vertical line
     /// Ok -> the equation of a line
-    pub fn compute_liniar_regression(&self) -> Result<Line, XBar> {
+    pub fn compute_linear_regression(&self) -> Result<Line, XBar> {
 
         if self.x_name.is_empty() || self.y_values.is_empty() {
             panic!("Missing column names");

@@ -22,6 +22,7 @@ pub fn add(left: usize, right: usize) -> usize {
 
 #[cfg(test)]
 mod tests {
+    use std::arch::x86_64::_mm_aeskeygenassist_si128;
     use super::*;
     use crate::matrix::MatrixMN;
 
@@ -98,6 +99,9 @@ mod tests {
 
         assert!(true);
     }
+
+
+
     #[test]
     /// the function will verify
     /// the elements, the height and the length of the reshaped matrix
@@ -965,6 +969,43 @@ mod tests {
 
 
     #[test]
+    fn create_matrices_with_zeros() {
+        // matrix with 10 lines and 2 columns
+        let mut mat: MatrixMN = MatrixMN::zeros(10, 2);
+        if mat.height() != 10 || mat.nr_lines() != 10 {
+            assert!(false);
+        }
+        if mat.length() != 2 || mat.nr_columns() != 2 {
+            assert!(false);
+        }
+        for i in 0..=9 {
+            for j in 0..=1 {
+                if mat.values[i][j] != 0.0 {
+                    assert!(false);
+                }
+            }
+        }
+
+        // matrix with 5 lines and 7 columns
+        mat = MatrixMN::zeros(5, 7);
+        if mat.height() != 5 || mat.nr_lines() != 5 {
+            assert!(false);
+        }
+        if mat.length() != 7 || mat.nr_columns() != 7 {
+            assert!(false);
+        }
+        for i in 0..=4 {
+            for j in 0..=6 {
+                if mat.values[i][j] != 0.0 {
+                    assert!(false);
+                }
+            }
+        }
+
+        assert!(true);
+    }
+
+    #[test]
     fn transpose_matrix_1() {
         let mat: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 2.0, 3.0 , 4.0], 1, 4);
         // 1.0 2.0 3.0 4.0
@@ -1293,5 +1334,258 @@ mod tests {
             }
         }
         assert!(true);
+    }
+
+    #[test]
+    fn determinant_1() {
+        let mat: MatrixMN = MatrixMN::create_matrix(&vec![1.0], 1, 1);
+        assert_eq!(mat.det(), 1.0);
+    }
+
+    #[test]
+    fn determinant_2() {
+        let mat: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 2.0, 3.0, 4.0], 2, 2);
+        assert_eq!(mat.det(), -2.0);
+    }
+
+    #[test]
+    fn determinant_3() {
+        let mut vector: Vec<f64> = Vec::new();
+        for i in 1..=9 {
+            vector.push(i as f64);
+        }
+
+        let mat: MatrixMN = MatrixMN::create_matrix(&vector, 3, 3);
+        assert_eq!(mat.det(), 0.0);
+    }
+
+    #[test]
+    fn determinant_4() {
+        let mut vector: Vec<f64> = Vec::new();
+        for i in 1..=16 {
+            vector.push(i as f64);
+        }
+
+        let mat: MatrixMN = MatrixMN::create_matrix(&vector, 4, 4);
+        assert_eq!(mat.det(), 0.0);
+    }
+
+    #[test]
+    fn determinant_5() {
+        let vals: Vec<f64> = vec![1.0, 1.0, 2.0, 4.0, 5.0, 7.0, 8.0, 9.0, 10.0];
+        let mat: MatrixMN = MatrixMN::create_matrix(&vals, 3, 3);
+        assert_eq!(mat.det(), -5.0);
+    }
+
+    #[test]
+    fn determinant_6() {
+        let mut vector: Vec<f64> = Vec::new();
+        for i in 1..=25 {
+            vector.push(i as f64);
+        }
+
+        let mat: MatrixMN = MatrixMN::create_matrix(&vector, 5, 5);
+        assert_eq!(mat.det(), 0.0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn invalid_determinant_1() {
+        let mut vector: Vec<f64> = Vec::new();
+        for i in 1..=16 {
+            vector.push(i as f64);
+        }
+
+        let mat: MatrixMN = MatrixMN::create_matrix(&vector, 2, 8);
+        let det: f64 = mat.det();       // should panic
+        assert!(false, "Should panic! The determinant can be applied only to square matrices.");
+    }
+
+    #[test]
+    #[should_panic]
+    fn invalid_determinant_2() {
+        let mut vector: Vec<f64> = Vec::new();
+        for i in 1..=16 {
+            vector.push(i as f64);
+        }
+
+        let mat: MatrixMN = MatrixMN::create_matrix(&vector, 16, 1);
+        let det: f64 = mat.det();       // should panic
+        assert!(false, "Should panic! The determinant can be applied only to square matrices.");
+    }
+
+
+    #[test]
+    fn inverse_matrix_1() {
+        let mat: MatrixMN = MatrixMN::create_matrix(&vec![1.0], 1, 1);
+        if !mat.is_invertible() {
+            assert!(false);
+        }
+        let inv: MatrixMN = mat.inverse();
+
+        if inv.height() != 1 || inv.nr_lines() != 1 {
+            assert!(false);
+        }
+        if inv.length() != 1 || inv.nr_columns() != 1 {
+            assert!(false);
+        }
+        if inv.values[0][0] != 1.0 {
+            assert!(false);
+        }
+
+        assert!(true);
+    }
+
+    #[test]
+    fn inverse_matrix_2() {
+        let mat: MatrixMN = MatrixMN::create_matrix(&vec![5.0], 1, 1);
+        if !mat.is_invertible() {
+            assert!(false);
+        }
+        let inv: MatrixMN = mat.inverse();
+
+        if inv.height() != 1 || inv.nr_lines() != 1 {
+            assert!(false);
+        }
+        if inv.length() != 1 || inv.nr_columns() != 1 {
+            assert!(false);
+        }
+        if inv.values[0][0] != 0.2 {
+            assert!(false);
+        }
+
+        assert!(true);
+    }
+
+    #[test]
+    fn inverse_matrix_3() {
+        let mat: MatrixMN = MatrixMN::create_matrix(&vec![-0.5], 1, 1);
+        if !mat.is_invertible() {
+            assert!(false);
+        }
+        let inv: MatrixMN = mat.inverse();
+
+        if inv.height() != 1 || inv.nr_lines() != 1 {
+            assert!(false);
+        }
+        if inv.length() != 1 || inv.nr_columns() != 1 {
+            assert!(false);
+        }
+        inv.disp();
+        if inv.values[0][0] != -2.0 {
+            assert!(false);
+        }
+
+        assert!(true);
+    }
+    #[test]
+    fn inverse_matrix_4() {
+        let mat: MatrixMN = MatrixMN::create_matrix(&vec![1.0, 2.0, 3.0, 4.0], 2, 2);
+        if !mat.is_invertible() {
+            assert!(false);
+        }
+        let inv: MatrixMN = mat.inverse();
+
+        if inv.height() != 2 || inv.nr_lines() != 2 {
+            assert!(false);
+        }
+        if inv.length() != 2 || inv.nr_columns() != 2 {
+            assert!(false);
+        }
+        inv.disp();
+        if inv.values[0][0] != -2.0 || inv.values[0][1] != 1.0
+            || inv.values[1][0] != 1.5 || inv.values[1][1] != -0.5 {
+            assert!(false);
+        }
+
+        assert!(true);
+    }
+
+    #[test]
+    fn inverse_matrix_5() {
+        let vals: Vec<f64> = vec![1.0, 1.0, 2.0, 4.0, 5.0, 7.0, 8.0, 9.0, 10.0];
+        let mat: MatrixMN = MatrixMN::create_matrix(&vals, 3, 3);
+        if !mat.is_invertible() {
+            assert!(false);
+        }
+        let inv: MatrixMN = mat.inverse();
+
+        if inv.height() != 3 || inv.nr_lines() != 3 {
+            assert!(false);
+        }
+        if inv.length() != 3 || inv.nr_columns() != 3 {
+            assert!(false);
+        }
+        inv.disp();
+        if inv.values[0][0] != 13.0/5.0  || inv.values[0][1] != -8.0/5.0 || inv.values[0][2] != 3.0/5.0
+            || inv.values[1][0] != -16.0/5.0 || inv.values[1][1] != 6.0/5.0 || inv.values[1][2] != -1.0/5.0
+            || inv.values[2][0] != 4.0/5.0 || inv.values[2][1] != 1.0/5.0 || inv.values[2][2] != -1.0/5.0 {
+            assert!(false);
+        }
+
+        assert!(true);
+    }
+
+    #[test]
+    fn inverse_matrix_6() {
+        let vals: Vec<f64> = vec![1.0, 1.0, 2.0, 4.0, 5.0, 7.0, 8.0, 9.0, 10.0];
+        let mat: MatrixMN = MatrixMN::create_matrix(&vals, 3, 3);
+        let matt: MatrixMN = mat.transpose();
+
+        if !matt.is_invertible() {
+            assert!(false);
+        }
+
+        let inv: MatrixMN = matt.inverse();
+        let invt: MatrixMN = inv.transpose();
+
+        if inv.height() != 3 || inv.nr_lines() != 3 {
+            assert!(false);
+        }
+        if inv.length() != 3 || inv.nr_columns() != 3 {
+            assert!(false);
+        }
+
+        if invt.values[0][0] != 13.0/5.0  || invt.values[0][1] != -8.0/5.0 || invt.values[0][2] != 3.0/5.0
+            || invt.values[1][0] != -16.0/5.0 || invt.values[1][1] != 6.0/5.0 || invt.values[1][2] != -1.0/5.0
+            || invt.values[2][0] != 4.0/5.0 || invt.values[2][1] != 1.0/5.0 || invt.values[2][2] != -1.0/5.0 {
+            assert!(false);
+        }
+
+        assert!(true);
+    }
+
+    #[test]
+    fn inverse_invalid_1() {
+        let mat: MatrixMN = MatrixMN::create_matrix(&vec![0.0], 1, 1);
+        assert_eq!(mat.is_invertible(), false);
+    }
+
+    #[test]
+    fn inverse_invalid_2() {
+        let mat: MatrixMN = MatrixMN::create_matrix(&vec![2.0, -1.0, -8.0, 4.0], 2, 2);
+        assert_eq!(mat.is_invertible(), false);
+    }
+
+    #[test]
+    fn inverse_invalid_3() {
+        let mut vector: Vec<f64> = Vec::new();
+        for i in 1..=9 {
+            vector.push(i as f64);
+        }
+
+        let mat: MatrixMN = MatrixMN::create_matrix(&vector, 3, 3);
+        assert_eq!(mat.is_invertible(), false);
+    }
+
+    #[test]
+    fn inverse_invalid_4() {
+        let mut vector: Vec<f64> = Vec::new();
+        for i in 1..=16 {
+            vector.push(i as f64);
+        }
+
+        let mat: MatrixMN = MatrixMN::create_matrix(&vector, 4, 4);
+        assert_eq!(mat.is_invertible(), false);
     }
 }

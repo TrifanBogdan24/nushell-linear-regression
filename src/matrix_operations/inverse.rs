@@ -32,15 +32,22 @@ impl MatrixMN {
             panic!("The matrix is singular, and its inverse does not exist.");
         }
 
-        let mut inverse_matrix = MatrixMN::empty();
+        let mut inverse_matrix: MatrixMN = MatrixMN::empty();
 
-        for i in 0..m {
+
+        if n == 1 {
+            // the `determinant` of a square matrix with 1 line and 1 columns
+            // equals the singe element of the matrix
+            return MatrixMN::create_matrix(&vec![1.0 / self.values[0][0]], 1, 1);
+        }
+
+        for i in 0..=(m - 1) {
             let mut row = Vec::new();
 
-            for j in 0..n {
+            for j in 0..=(n - 1) {
                 let cofactor = match (i + j) % 2 == 0 {
                     true => self.delete_line_column(i, j).det(),
-                    false => self.delete_line_column(i, j).det(),
+                    false => -self.delete_line_column(i, j).det(),
                 };
 
                 row.push(cofactor / det);
@@ -49,8 +56,8 @@ impl MatrixMN {
             inverse_matrix.values.push(row);
         }
 
-        // Transpose the result because adjugate is transposed
-        return inverse_matrix.transpose();
 
+        // Transpose the result because adjucate is transposed
+        return inverse_matrix.transpose();
     }
 }
