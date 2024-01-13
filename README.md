@@ -84,11 +84,11 @@ X = (At * A)^(-1) * At * B
 ```
 
 
-where:
-`In`:
+Where:
+- `In`:
  1. identity matrix with n lines and n columns
  2. has 1 on the diagonal and 0 in rest
--`At`:
+- `At`:
  1. the transposed matrix
  2. columns of the initial matrix become rows of the transpose 
  3. rows of the initial matrix become columns of the transpose 
