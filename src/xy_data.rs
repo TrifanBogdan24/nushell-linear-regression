@@ -58,6 +58,28 @@ impl DataSet {
 }
 
 
+impl DataSet {
+    /// indexing starts from 0
+    pub fn new_from_vec(val2: Vec<f64>) -> Self {
+        let mut val1: Vec<f64> = Vec::new();
+
+        for i in 0..=(val2.len() - 1) {
+            val1.push(i as f64);
+        }
+
+        let ret: DataSet = DataSet {
+            x_name: String::from("X"),
+            y_name: String::from("Y"),
+            x_values: val1,
+            y_values: val2,
+        };
+
+        ret.validate_data_set();
+        return ret;
+    }
+}
+
+
 pub fn avg(vector: &Vec<f64>) -> f64 {
     if vector.is_empty() {
         return 0.0f64;
@@ -106,7 +128,6 @@ impl DataSet {
 
         let stage1: MatrixMN = MatrixMN::mul(&a.transpose(), &a);
 
-       stage1.disp();
 
         if !stage1.is_invertible() {
             let ret = XBar {

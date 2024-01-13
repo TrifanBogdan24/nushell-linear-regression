@@ -23,7 +23,7 @@ pub fn add(left: usize, right: usize) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use std::arch::x86_64::_mm_aeskeygenassist_si128;
+    use std::arch::x86_64::{_mm256_stream_pd, _mm_aeskeygenassist_si128};
     use super::*;
     use crate::matrix::MatrixMN;
     use crate::xy_data::*;
@@ -1740,29 +1740,45 @@ mod tests {
     fn create_invalid_data_set_5() {
         let nm1: String = String::from("X-var");
         let nm2: String = String::from("Y-var");
-        let val1: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0, 11.5];
-        let val2: Vec<f64> = vec![11.0, 15.0, 26.0, 55.0];
+        let val1: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0, 11.5];      // len = 5
+        let val2: Vec<f64> = vec![11.0, 15.0, 26.0, 55.0];        // len = 4
 
         let dt: DataSet = DataSet::new(nm1.clone(), nm2.clone(), val1.clone(), val2.clone());
+        assert!(true);
+    }
 
-        if dt.x_name != "X-var" || dt.y_name != "Y-var" {
+
+    #[test]
+    fn create_data_set_from_vector_1() {
+        let val2: Vec<f64> = vec![1.0, 2.0];
+
+        let dt: DataSet = DataSet::new_from_vec(val2.clone());
+
+        if dt.x_name != "X" || dt.y_name != "Y" {
             assert!(false);
         }
 
-        if dt.x_values.len() != dt.y_values.len()
-            || dt.x_values.len() != val1.len() || dt.y_values.len() != val2.len() {
+        // check the X-axis
+        if dt.x_values[0] != 0.0 || dt.x_values[1] != 1.0 {
             assert!(false);
         }
 
-        for i in 0..dt.x_values.len() {
-            if dt.x_values[i] != val1[i] || dt.y_values[i] != val2[i] {
-                assert!(false);
-            }
+        // check the Y-axis
+        if dt.y_values[0] != 1.0 || dt.y_values[1] != 2.0 {
+            assert!(false);
         }
 
         assert!(true);
     }
 
+
+    #[test]
+    #[should_panic]
+    fn create_invalid_data_set_from_vector_1() {
+        let val2: Vec<f64> = vec![];
+        let dt: DataSet = DataSet::new_from_vec(val2.clone());
+        assert!(true);
+    }
 
     #[test]
     fn linear_regression_1() {
@@ -1771,6 +1787,7 @@ mod tests {
         let val1: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
         let val2: Vec<f64> = vec![10.0, 20.0, 30.0, 40.0];
 
+        // EQUATION d : y = 10 * x
         let dt: DataSet = DataSet::new(nm1.clone(), nm2.clone(), val1.clone(), val2.clone());
 
         // the line will be the first bisector
@@ -1795,4 +1812,132 @@ mod tests {
         assert!(true);
     }
 
+
+    #[test]
+    fn linear_regression_2() {
+        let nm1: String = String::from("X-var");
+        let nm2: String = String::from("Y-var");
+        let val1: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
+        let val2: Vec<f64> = vec![11.0, 11.0, 11.0, 11.0];
+
+        // EQUATION d : y = 11
+        let dt: DataSet = DataSet::new(nm1.clone(), nm2.clone(), val1.clone(), val2.clone());
+
+        // the line will be a line parallel to OY
+        match dt.compute_linear_regression() {
+            Ok(line) => {
+                // d : y = a * x + b ; a = slope; b = intercept
+                let precision = 1e-10;
+
+                if abs_diff_eq!(line.slope, 0.0, epsilon = precision) == false {
+                    assert!(false);
+                }
+
+                if abs_diff_eq!(line.intercept, 11.0, epsilon = precision) == false {
+                    assert!(false);
+                }
+
+                assert!(true);
+            },
+            Err(_) => {
+                assert!(false);
+            },
+        }
+        assert!(true);
+    }
+
+
+    #[test]
+    fn linear_regression_3() {
+        let nm1: String = String::from("X-var");
+        let nm2: String = String::from("Y-var");
+        let val1: Vec<f64> = vec![7.0, 7.0, 7.0, 7.0];
+        let val2: Vec<f64> = vec![1.0, 1.5, 2.5, 4.0];
+
+        // EQUATION d : x = 7
+        let dt: DataSet = DataSet::new(nm1.clone(), nm2.clone(), val1.clone(), val2.clone());
+
+        match dt.compute_linear_regression() {
+            Ok(_) => {
+                assert!(false);
+            },
+            Err(xbar) => {
+                let precision = 1e-10;
+
+                if abs_diff_eq!(xbar.x, 7.0, epsilon = precision) == false {
+                    assert!(false);
+                }
+                assert!(true);
+            }
+        }
+
+        assert!(true);
+    }
+
+    #[test]
+    fn linear_regression_4() {
+        let nm1: String = String::from("X-var");
+        let nm2: String = String::from("Y-var");
+        let val1: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
+        let val2: Vec<f64> = vec![14.5, 140.1, 201.3, 220.5];
+
+        // EQUATION d : y = 67.92 * x - 25.70
+        let dt: DataSet = DataSet::new(nm1.clone(), nm2.clone(), val1.clone(), val2.clone());
+
+        match dt.compute_linear_regression() {
+            Ok(line) => {
+                // d : y = a * x + b ; a = slope; b = intercept
+                let precision = 1e-2;
+
+                if abs_diff_eq!(line.slope, 67.92, epsilon = precision) == false {
+                    assert!(false);
+                }
+
+                if abs_diff_eq!(line.intercept, -25.70, epsilon = precision) == false {
+                    assert!(false);
+                }
+
+                assert!(true);
+            },
+            Err(_) => {
+                assert!(false);
+            }
+        }
+
+        assert!(true);
+    }
+
+
+    #[test]
+    fn linear_regression_5() {
+        let nm1: String = String::from("X-var");
+        let nm2: String = String::from("Y-var");
+        let val1: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
+        let val2: Vec<f64> = vec![220.5, 201.3, 140.1, 14.5];
+
+        // EQUATION d : y = -67.919 * x + 313.9
+        let dt: DataSet = DataSet::new(nm1.clone(), nm2.clone(), val1.clone(), val2.clone());
+
+        match dt.compute_linear_regression() {
+            Ok(line) => {
+                // d : y = a * x + b ; a = slope; b = intercept
+                let precision = 1e-2;
+
+                if abs_diff_eq!(line.slope, -67.919, epsilon = precision) == false {
+                    assert!(false);
+                }
+
+                if abs_diff_eq!(line.intercept, 313.900, epsilon = precision) == false {
+                    assert!(false);
+                }
+
+                assert!(true);
+            },
+            Err(_) => {
+                assert!(false);
+            }
+        }
+
+        assert!(true);
+    }
 }
